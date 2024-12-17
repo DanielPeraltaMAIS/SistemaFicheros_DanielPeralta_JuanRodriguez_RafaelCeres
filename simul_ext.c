@@ -355,31 +355,30 @@ int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
 
 void GrabarDirectorio(EXT_ENTRADA_DIR *directorio, FILE *fich) 
 {
-    fseek(fich, SIZE_BLOQUE * 3, SEEK_SET); 
-    fwrite(directorio, SIZE_BLOQUE, 1, fich);
+   fseek(fich, SIZE_BLOQUE * 3, SEEK_SET); 
+   fwrite(directorio, SIZE_BLOQUE, 1, fich);
 }
 
 void GrabarInodos(EXT_BLQ_INODOS *inodos, FILE *fich) 
 {
-    fseek(fich, SIZE_BLOQUE * 2, SEEK_SET); 
-    fwrite(inodos, SIZE_BLOQUE, 1, fich);
+   fseek(fich, SIZE_BLOQUE * 2, SEEK_SET); 
+   fwrite(inodos, SIZE_BLOQUE, 1, fich);
 }
 
 void GrabarByteMaps(EXT_BYTE_MAPS *ext_bytemaps, FILE *fich) 
 {
-    fseek(fich, SIZE_BLOQUE * 1, SEEK_SET); // Posición del mapa de bytes en la partición
-    fwrite(ext_bytemaps, SIZE_BLOQUE, 1, fich);
+   fseek(fich, SIZE_BLOQUE * 1, SEEK_SET); 
+   fwrite(ext_bytemaps, SIZE_BLOQUE, 1, fich);
 }
 
 void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich) 
 {
-    fseek(fich, 0, SEEK_SET); 
-    fwrite(ext_superblock, SIZE_BLOQUE, 1, fich);
+   fwrite(ext_superblock, SIZE_BLOQUE, 1, fich);
 }
 
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich) 
 {
-    fseek(fich, SIZE_BLOQUE * 4, SEEK_SET);
-    fwrite(memdatos, SIZE_BLOQUE, MAX_BLOQUES_DATOS, fich);
+   fseek(fich, SIZE_BLOQUE * 4, SEEK_SET);
+   fwrite(memdatos, SIZE_BLOQUE, MAX_BLOQUES_DATOS, fich);
 }
 
