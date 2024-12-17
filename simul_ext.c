@@ -434,7 +434,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
 {
    int inodo_a_eliminar = -1, salir = 0;
 
-    // Buscar la entrada del directorio correspondiente al nombre del fichero
+    // Buscamos el fichero a eliminar
     for (int i = 0; i < MAX_FICHEROS && !salir; i++) {
         if (strcmp(directorio[i].dir_nfich, nombre) == 0) {
             inodo_a_eliminar = directorio[i].dir_inodo;
@@ -442,10 +442,10 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
         }
     }
 
-    // Si no se encuentra el fichero, devolver un error
+    // Devuele error si no lo encuentra
     if (inodo_a_eliminar == -1) {
         printf("Error: fichero no encontrado\n");
-        return -1;  // Error: archivo no encontrado
+        return -1;  
     }
 
     //Liberar el inodo correspondiente
@@ -472,7 +472,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
         }
     }
 
-    //Eliminar la entrada del directorio
+    //Eliminar el fichero del directorio
     salir =0;
     for (int i = 0; i < MAX_FICHEROS && !salir; i++) {
         if (directorio[i].dir_inodo == inodo_a_eliminar) {
