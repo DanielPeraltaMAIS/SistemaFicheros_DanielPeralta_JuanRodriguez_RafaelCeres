@@ -98,6 +98,11 @@ int main()
          continue;
       }
 
+      else if(strcmp(orden,"imprimir")==0)
+      {
+         Imprimir(directorio, &ext_blq_inodos, memdatos, argumento1);
+      }
+
       
       // Escritura de metadatos en comandos rename, remove, copy     
       //Grabarinodosydirectorio(&directorio,&ext_blq_inodos,fent);
@@ -156,7 +161,7 @@ void PrintBytemaps(EXT_BYTE_MAPS *ext_bytemaps)
 
 int ComprobarComando(char *strcomando, char *orden, char *argumento1, char *argumento2)
 {
-    return 0;
+   return 0;
 }
 
 void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup)
@@ -169,9 +174,19 @@ void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup)
    printf("Primer bloque de datos = %d\n", (*psup).s_first_data_block);
 }
 
-int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre)
+int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre)  //Devuelve 1 si existe y 0 si no
 {
-    return 0;
+   int encontrado = -1;
+
+   for(int i = 0; i < sizeof(directorio); i++)
+   {
+      if(strcmp(directorio[i].dir_nfich, nombre) == 0)
+      {
+         encontrado = i;
+      }
+   }
+
+   return encontrado;
 }
 
 void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
@@ -180,22 +195,40 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 
 int Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
 {
-    return 0;
+   return 0;
 }
 
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *memdatos, char *nombre)
 {
-    return 0;
+
+   int indice = BuscaFich(directorio, inodos, nombre);
+
+   if(indice != -1)
+   {
+      for(int i = 0; i < MAX_NUMS_BLOQUE_INODO; i++)
+      {
+         
+
+         
+      }
+   }
+
+   else
+   {
+      printf("Fichero no encontrado: %s.", nombre);
+   }
+
+   return 0;
 }
 
 int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *ext_bytemaps, EXT_SIMPLE_SUPERBLOCK *ext_superblock, char *nombre, FILE *fich)
 {
-    return 0;
+   return 0;
 }
 
 int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *ext_bytemaps, EXT_SIMPLE_SUPERBLOCK *ext_superblock, EXT_DATOS *memdatos, char *nombreorigen, char *nombredestino, FILE *fich)
 {
-    return 0;
+   return 0;
 }
 
 void Grabarinodosydirectorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, FILE *fich)
@@ -213,3 +246,4 @@ void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich)
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich)
 {
 }
+
