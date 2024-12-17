@@ -101,7 +101,10 @@ int main()
          Renombrar(directorio, &ext_blq_inodos, argumento1, argumento2);
          continue;
       }
-      
+      else if (strcmp(orden, "imprimir")==0){
+         //Imprimir();
+         continue;
+      }
       // Escritura de metadatos en comandos rename, remove, copy     
       //Grabarinodosydirectorio(&directorio,&ext_blq_inodos,fent);
       //GrabarByteMaps(&ext_bytemaps,fent);
