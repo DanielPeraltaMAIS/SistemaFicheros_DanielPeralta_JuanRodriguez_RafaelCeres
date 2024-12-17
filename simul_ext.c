@@ -192,7 +192,7 @@ int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre)
 
 void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 {
-}
+
 
    printf("Ficheros :\n");
 
@@ -222,7 +222,14 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
       }
    }
 }
-
+void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
+{
+   for(int i = 0; i < MAX_FICHEROS; i++){
+      if((strcmp(directorio[i].dir_nfich, nombreantiguo) == 0)&&(strcmp(directorio[i].dir_nfich, nombrenuevo) != 0)){
+         memcpy(directorio[i].dir_nfich, nombreantiguo, LEN_NFICH);
+      }
+   }
+}
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *memdatos, char *nombre)
 {
 
