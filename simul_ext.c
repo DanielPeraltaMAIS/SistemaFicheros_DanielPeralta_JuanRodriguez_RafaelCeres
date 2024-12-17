@@ -82,7 +82,7 @@ int main()
 
 	   if (strcmp(orden,"dir")==0) 
       {
-         Directorio(&directorio,&ext_blq_inodos);
+         Directorio(directorio,&ext_blq_inodos);
          continue;
       }
 
