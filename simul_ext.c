@@ -278,11 +278,10 @@ int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *mem
       printf("\n");
    }
 
-    // Verificar si el fichero tiene contenido (tamaño mayor que 0)
-    if (inodo->size_fichero == 0) {
-        printf("El fichero '%s' está vacío.\n", nombre);
-        return 0;  // El fichero está vacío
-    }
+   else
+   {
+      printf("Fichero no encontrado: %s.\n", nombre);
+   }
 
     // 3. Mostrar el contenido del fichero bloque por bloque
     printf("Contenido de '%s' (tamaño: %d bytes):\n", nombre, inodo->size_fichero);
