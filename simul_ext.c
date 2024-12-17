@@ -226,7 +226,7 @@ void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre
 {
    for(int i = 0; i < MAX_FICHEROS; i++){
       if((strcmp(directorio[i].dir_nfich, nombreantiguo) == 0)&&(strcmp(directorio[i].dir_nfich, nombrenuevo) != 0)){
-         memcpy(directorio[i].dir_nfich, nombreantiguo, LEN_NFICH);
+         memcpy(directorio[i].dir_nfich, nombrenuevo, LEN_NFICH);
       }
    }
 }
