@@ -82,7 +82,7 @@ int main()
 
 	   if (strcmp(orden,"dir")==0) 
       {
-         //Directorio(&directorio,&ext_blq_inodos);
+         Directorio(directorio,&ext_blq_inodos);
          continue;
       }
 
@@ -191,7 +191,36 @@ int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre)
 
 void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 {
+
+   printf("Ficheros :\n");
+
+    
+    
+       for (int i = 1; i < MAX_FICHEROS; i++) 
+      {
+      if (directorio[i].dir_inodo != NULL_INODO)  
+      {
+         EXT_SIMPLE_INODE *inodo = &inodos->blq_inodos[directorio[i].dir_inodo];
+         
+         printf("Nombre: %s\t", directorio[i].dir_nfich);
+         printf("Inodo: %d\t", directorio[i].dir_inodo);  
+         printf("Tamaño: %d\t", inodo->size_fichero);    
+
+         printf("Bloques: ");
+         for (int j = 0; j < MAX_NUMS_BLOQUE_INODO; j++) 
+         {
+            if (inodo->i_nbloque[j] != NULL_BLOQUE)
+            {
+               printf("%d ", inodo->i_nbloque[j]); 
+            }
+            
+         }
+         printf("\n");
+      }
+   }
 }
+
+
 
 int Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
 {
