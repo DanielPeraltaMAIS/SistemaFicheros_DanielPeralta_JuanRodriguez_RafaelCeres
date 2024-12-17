@@ -351,29 +351,35 @@ int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
    return 0;
 }
 
+//Funciones para grabar los datos en la particion una vez se termina de usar
 
-void GrabarDirectorio(EXT_ENTRADA_DIR *directorio, FILE *fich)
+void GrabarDirectorio(EXT_ENTRADA_DIR *directorio, FILE *fich) 
 {
-   fwrite(directorio, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
+    fseek(fich, SIZE_BLOQUE * 3, SEEK_SET); 
+    fwrite(directorio, SIZE_BLOQUE, 1, fich);
 }
 
-void GrabarByteMaps(EXT_BYTE_MAPS *ext_bytemaps, FILE *fich)
+void GrabarInodos(EXT_BLQ_INODOS *inodos, FILE *fich) 
 {
-  fwrite(ext_bytemaps, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
+    fseek(fich, SIZE_BLOQUE * 2, SEEK_SET); 
+    fwrite(inodos, SIZE_BLOQUE, 1, fich);
 }
 
-void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich)
+void GrabarByteMaps(EXT_BYTE_MAPS *ext_bytemaps, FILE *fich) 
 {
-   fwrite(ext_superblock, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
+    fseek(fich, SIZE_BLOQUE * 1, SEEK_SET); // Posición del mapa de bytes en la partición
+    fwrite(ext_bytemaps, SIZE_BLOQUE, 1, fich);
 }
 
-void GrabarDatos(EXT_DATOS *memdatos, FILE *fich)
+void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich) 
 {
-   fwrite(memdatos, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
+    fseek(fich, 0, SEEK_SET); 
+    fwrite(ext_superblock, SIZE_BLOQUE, 1, fich);
 }
 
-void GrabarInodos(EXT_BLQ_INODOS *inodos, FILE *fich)
+void GrabarDatos(EXT_DATOS *memdatos, FILE *fich) 
 {
-   fwrite(inodos, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
+    fseek(fich, SIZE_BLOQUE * 4, SEEK_SET);
+    fwrite(memdatos, SIZE_BLOQUE, MAX_BLOQUES_DATOS, fich);
 }
 
