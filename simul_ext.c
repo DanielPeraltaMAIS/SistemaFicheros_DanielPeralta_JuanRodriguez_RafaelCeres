@@ -243,7 +243,6 @@ int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *mem
       for(int i = 0; i < MAX_NUMS_BLOQUE_INODO; i++)
       {
 
-         EXT
          if (inodo.i_nbloque[i] != NULL_BLOQUE)
          {
             printf("%s", memdatos[inodo.i_nbloque[i]].dato);  //Imprime los contenidos de los bloques
