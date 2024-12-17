@@ -227,6 +227,7 @@ int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre)
 {
    int encontrado = -1;
 
+   //Recorre los nombres hasta que lo encuentre. Si no lo encuentra, se queda en -1
    for(int i = 0; i < sizeof(directorio); i++)
    {
       if(strcmp(directorio[i].dir_nfich, nombre) == 0)
@@ -258,6 +259,8 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
         
 
          printf("Bloques: ");
+
+         //Recorre los bloques
          for (int j = 0; j < MAX_NUMS_BLOQUE_INODO; j++) 
          {
             if (inodo->i_nbloque[j] != NULL_BLOQUE)
@@ -270,21 +273,27 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
       }
    }
 }
+
 void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
 {
    int posicionNombreAntiguo = -1, posicionNombreNuevo = -1;
-   for(int i = 0; (i < MAX_FICHEROS); i++){
+   for(int i = 0; (i < MAX_FICHEROS); i++)
+   {
       posicionNombreAntiguo = BuscaFich(directorio, inodos, nombreantiguo);
       posicionNombreNuevo = BuscaFich(directorio, inodos, nombrenuevo);
    }
-   if(posicionNombreAntiguo < 0){
+   if(posicionNombreAntiguo < 0)
+   {
       printf("ERROR: Fichero %s no encontrado\n", nombreantiguo);
    }
-   else if(posicionNombreNuevo >= 0){
+   else if(posicionNombreNuevo >= 0)
+   {
       printf("ERROR: El fichero %s ya existe\n", nombrenuevo);
    }
-   else{
+   else
+   {
       memcpy(directorio[posicionNombreAntiguo].dir_nfich, nombrenuevo, LEN_NFICH); //Cambio de nombre exitoso
+      printf("El nombre de %s se ha cambiado a %s con éxito.\n", nombreantiguo, nombrenuevo);
    }
 }
 
