@@ -23,7 +23,8 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos,
 int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos,
            EXT_BYTE_MAPS *ext_bytemaps, EXT_SIMPLE_SUPERBLOCK *ext_superblock,
            EXT_DATOS *memdatos, char *nombreorigen, char *nombredestino,  FILE *fich);
-void Grabarinodosydirectorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, FILE *fich);
+void GrabarDirectorio(EXT_ENTRADA_DIR *directorio, FILE *fich);
+void GrabarInodos(EXT_BLQ_INODOS *inodos, FILE *fich);
 void GrabarByteMaps(EXT_BYTE_MAPS *ext_bytemaps, FILE *fich);
 void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich);
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich);
@@ -46,14 +47,10 @@ int main()
    EXT_DATOS memdatos[MAX_BLOQUES_DATOS];
    EXT_DATOS datosfich[MAX_BLOQUES_PARTICION];
    int entradadir;
-   int grabardatos;
+   int grabardatos = 0;
    FILE *fent;
      
-     // Lectura del fichero completo de una sola vez
-     fent = fopen("particion.bin","rb+");
-     fread(&datosfich, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fent);    
-     
-     
+
    fent = fopen("particion.bin","r+b");
    fread(&datosfich, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fent);    
      
@@ -83,23 +80,20 @@ int main()
 	   if (strcmp(orden,"dir")==0) 
       {
          Directorio(directorio,&ext_blq_inodos);
-         continue;
       }
 
       else if (strcmp(orden,"bytemaps")==0) 
       {
          PrintBytemaps(&ext_bytemaps);
-         continue;
       }
 
       else if (strcmp(orden,"info")==0) 
       {
          LeeSuperBloque(&ext_superblock);
-         continue;
       }
       else if (strcmp(orden, "rename")==0){
          Renombrar(directorio, &ext_blq_inodos, argumento1, argumento2);
-         continue;
+         grabardatos = 1;
       }
       else if (strcmp(orden, "imprimir") == 0) 
       {
@@ -109,25 +103,33 @@ int main()
       else if(strcmp(orden, "copy")==0)
       {
          Copiar(directorio, &ext_blq_inodos, &ext_bytemaps, &ext_superblock, memdatos, argumento1, argumento2, fent);
+         grabardatos = 1;
       }
 
       else if(strcmp(orden, "remove")==0)
       {
          Borrar(directorio, &ext_blq_inodos, &ext_bytemaps, &ext_superblock, argumento1, fent);
+         grabardatos = 1;
       }
-      // Escritura de metadatos en comandos rename, remove, copy     
-      //Grabarinodosydirectorio(&directorio,&ext_blq_inodos,fent);
-      //GrabarByteMaps(&ext_bytemaps,fent);
-      //GrabarSuperBloque(&ext_superblock,fent);
-      if (grabardatos)
-         //GrabarDatos(&memdatos,fent);
-      grabardatos = 0;
+
+      
+         
       //Si el comando es salir se habrán escrito todos los metadatos
       //faltan los datos y cerrar
       if (strcmp(orden,"salir")==0)
       {
-         //GrabarDatos(&memdatos,fent);
          fclose(fent);
+         if (grabardatos)
+         {
+            fent = fopen("particion.bin","w+b");
+            GrabarSuperBloque(&ext_superblock, fent);
+            GrabarDirectorio(directorio, fent);
+            GrabarByteMaps(&ext_bytemaps, fent);
+            GrabarInodos(&ext_blq_inodos, fent);
+            GrabarDatos(memdatos, fent);
+         }
+
+         
          return 0;
       }
    }
@@ -350,19 +352,28 @@ int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
 }
 
 
-void Grabarinodosydirectorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, FILE *fich)
+void GrabarDirectorio(EXT_ENTRADA_DIR *directorio, FILE *fich)
 {
+   fwrite(directorio, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
 }
 
 void GrabarByteMaps(EXT_BYTE_MAPS *ext_bytemaps, FILE *fich)
 {
+  fwrite(ext_bytemaps, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
 }
 
 void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich)
 {
+   fwrite(ext_superblock, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
 }
 
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich)
 {
+   fwrite(memdatos, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
+}
+
+void GrabarInodos(EXT_BLQ_INODOS *inodos, FILE *fich)
+{
+   fwrite(inodos, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fich);
 }
 
