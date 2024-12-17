@@ -188,8 +188,9 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
          EXT_SIMPLE_INODE *inodo = &inodos->blq_inodos[directorio[i].dir_inodo];
          
          printf("Nombre: %s\t", directorio[i].dir_nfich);
-         printf("Inodo: %d\t", directorio[i].dir_inodo);  
          printf("Tamaño: %d\t", inodo->size_fichero);    
+         printf("Inodo: %d\t", directorio[i].dir_inodo);  
+        
 
          printf("Bloques: ");
          for (int j = 0; j < MAX_NUMS_BLOQUE_INODO; j++) 
