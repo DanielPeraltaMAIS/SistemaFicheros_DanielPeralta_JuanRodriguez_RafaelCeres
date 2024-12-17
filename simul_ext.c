@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include<string.h>
+#include <stdlib.h>
 #include<ctype.h>
 #include "cabeceras.h"
 
@@ -27,12 +28,14 @@ void GrabarByteMaps(EXT_BYTE_MAPS *ext_bytemaps, FILE *fich);
 void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich);
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich);
 
+char *leeLinea(int tam);
+
 int main()
 {
-	 char comando[LONGITUD_COMANDO];
-	 char orden[LONGITUD_COMANDO];
-	 char argumento1[LONGITUD_COMANDO];
-	 char argumento2[LONGITUD_COMANDO];
+	char* comando;
+	char* orden = (char *)malloc(LONGITUD_COMANDO);
+	char* argumento1 = (char *)malloc(LONGITUD_COMANDO);
+	char* argumento2 = (char *)malloc(LONGITUD_COMANDO);
 	 
 	int i,j;
 	unsigned long int m;
@@ -51,44 +54,93 @@ int main()
      fread(&datosfich, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fent);    
      
      
-     memcpy(&ext_superblock,(EXT_SIMPLE_SUPERBLOCK *)&datosfich[0], SIZE_BLOQUE);
-     memcpy(&directorio,(EXT_ENTRADA_DIR *)&datosfich[3], SIZE_BLOQUE);
-     memcpy(&ext_bytemaps,(EXT_BLQ_INODOS *)&datosfich[1], SIZE_BLOQUE);
-     memcpy(&ext_blq_inodos,(EXT_BLQ_INODOS *)&datosfich[2], SIZE_BLOQUE);
-     memcpy(memdatos,(EXT_DATOS *)&datosfich[4],MAX_BLOQUES_DATOS*SIZE_BLOQUE);
-     PrintBytemaps(&ext_bytemaps);
-     LeeSuperBloque(&ext_superblock);
-     // Buce de tratamiento de comandos
-     for (;;){
-		 do {
-		 printf (">> ");
-		 fflush(stdin);
-		 fgets(comando, LONGITUD_COMANDO, stdin);
-		 } while (ComprobarComando(comando,orden,argumento1,argumento2) !=0);
-	     if (strcmp(orden,"dir")==0) {
-            Directorio(directorio,&ext_blq_inodos);
-            continue;
-            }
-         // Escritura de metadatos en comandos rename, remove, copy     
-         Grabarinodosydirectorio(directorio,&ext_blq_inodos,fent);
-         GrabarByteMaps(&ext_bytemaps,fent);
-         GrabarSuperBloque(&ext_superblock,fent);
-         if (grabardatos)
-           GrabarDatos(memdatos,fent);
-         grabardatos = 0;
-         //Si el comando es salir se habrán escrito todos los metadatos
-         //faltan los datos y cerrar
-         if (strcmp(orden,"salir")==0){
-            GrabarDatos(memdatos,fent);
-            fclose(fent);
-            return 0;
-         }
-     }
+   fent = fopen("particion.bin","r+b");
+   fread(&datosfich, SIZE_BLOQUE, MAX_BLOQUES_PARTICION, fent);    
+     
+     
+   memcpy(&ext_superblock,(EXT_SIMPLE_SUPERBLOCK *)&datosfich[0], SIZE_BLOQUE);
+   memcpy(&directorio,(EXT_ENTRADA_DIR *)&datosfich[3], SIZE_BLOQUE);
+   memcpy(&ext_bytemaps,(EXT_BLQ_INODOS *)&datosfich[1], SIZE_BLOQUE);
+   memcpy(&ext_blq_inodos,(EXT_BLQ_INODOS *)&datosfich[2], SIZE_BLOQUE);
+   memcpy(&memdatos,(EXT_DATOS *)&datosfich[4],MAX_BLOQUES_DATOS*SIZE_BLOQUE);
+
+     
+   // Buce de tratamiento de comandos
+   for (;;)
+   {
+		do 
+      {
+		   printf (">> ");
+		   fflush(stdin);
+		   comando = leeLinea(LONGITUD_COMANDO);
+         orden = strtok(comando, " ");
+         argumento1 = strtok(NULL, " ");
+         argumento2 = strtok(NULL, " ");   //Separa la orden y los argumentos
+
+		} 
+      while (ComprobarComando(comando,orden,argumento1,argumento2) !=0);
+
+	   if (strcmp(orden,"dir")==0) 
+      {
+         //Directorio(&directorio,&ext_blq_inodos);
+         continue;
+      }
+
+      else if (strcmp(orden,"bytemaps")==0) 
+      {
+         PrintBytemaps(&ext_bytemaps);
+         continue;
+      }
+
+      else if (strcmp(orden,"info")==0) 
+      {
+         //LeeSuperBloque(&ext_superblock);
+         continue;
+      }
+
+      
+      // Escritura de metadatos en comandos rename, remove, copy     
+      //Grabarinodosydirectorio(&directorio,&ext_blq_inodos,fent);
+      //GrabarByteMaps(&ext_bytemaps,fent);
+      //GrabarSuperBloque(&ext_superblock,fent);
+      if (grabardatos)
+         //GrabarDatos(&memdatos,fent);
+      grabardatos = 0;
+      //Si el comando es salir se habrán escrito todos los metadatos
+      //faltan los datos y cerrar
+      if (strcmp(orden,"salir")==0)
+      {
+         //GrabarDatos(&memdatos,fent);
+         fclose(fent);
+         return 0;
+      }
+   }
+}
+
+char *leeLinea(int tam)
+{
+   int i = 0;
+   char c;
+   char *res = (char *)malloc(tam);
+   do
+   {
+      c = getchar();
+      if(c != '\n')
+      {
+         res[i++] = c;
+      }
+      
+
+   }
+   while(c != '\n' && i < tam);
+
+   return res;
+
 }
 
 void PrintBytemaps(EXT_BYTE_MAPS *ext_bytemaps)
 {
-   printf("Bytemap de bloques [0-24]:\n");
+   printf("Bytemap de bloques [1-25]:\n");
    for(int i = 0; i < 25; i++)
    {
       printf("%d ", (*ext_bytemaps).bmap_bloques[i] );
@@ -160,4 +212,9 @@ void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich)
 
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich)
 {
+}
+
+int ComprobarComando(char *strcomando, char *orden, char *argumento1, char *argumento2)
+{
+   return 0;
 }
