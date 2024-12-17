@@ -13,7 +13,7 @@ void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup);
 int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
               char *nombre);
 void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos);
-int Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
+void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
               char *nombreantiguo, char *nombrenuevo);
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
              EXT_DATOS *memdatos, char *nombre);
@@ -97,13 +97,14 @@ int main()
          LeeSuperBloque(&ext_superblock);
          continue;
       }
-
-      else if(strcmp(orden,"imprimir")==0)
-      {
-         Imprimir(directorio, &ext_blq_inodos, memdatos, argumento1);
+      else if (strcmp(orden, "rename")==0){
+         Renombrar(directorio, &ext_blq_inodos, argumento1, argumento2);
+         continue;
       }
-
-      
+      else if (strcmp(orden, "imprimir")==0){
+         //Imprimir();
+         continue;
+      }
       // Escritura de metadatos en comandos rename, remove, copy     
       //Grabarinodosydirectorio(&directorio,&ext_blq_inodos,fent);
       //GrabarByteMaps(&ext_bytemaps,fent);
@@ -192,6 +193,7 @@ int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre)
 void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 {
 
+
    printf("Ficheros :\n");
 
     
@@ -203,8 +205,9 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
          EXT_SIMPLE_INODE *inodo = &inodos->blq_inodos[directorio[i].dir_inodo];
          
          printf("Nombre: %s\t", directorio[i].dir_nfich);
-         printf("Inodo: %d\t", directorio[i].dir_inodo);  
          printf("Tamaño: %d\t", inodo->size_fichero);    
+         printf("Inodo: %d\t", directorio[i].dir_inodo);  
+        
 
          printf("Bloques: ");
          for (int j = 0; j < MAX_NUMS_BLOQUE_INODO; j++) 
@@ -219,14 +222,14 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
       }
    }
 }
-
-
-
-int Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
+void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
 {
-   return 0;
+   for(int i = 0; i < MAX_FICHEROS; i++){
+      if((strcmp(directorio[i].dir_nfich, nombreantiguo) == 0)&&(strcmp(directorio[i].dir_nfich, nombrenuevo) != 0)){
+         memcpy(directorio[i].dir_nfich, nombrenuevo, LEN_NFICH);
+      }
+   }
 }
-
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *memdatos, char *nombre)
 {
 
