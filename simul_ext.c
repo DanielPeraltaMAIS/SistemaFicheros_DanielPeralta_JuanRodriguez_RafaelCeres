@@ -283,32 +283,7 @@ int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *mem
       printf("Fichero no encontrado: %s.\n", nombre);
    }
 
-    // 3. Mostrar el contenido del fichero bloque por bloque
-    printf("Contenido de '%s' (tamaño: %d bytes):\n", nombre, inodo->size_fichero);
-    int num_bloques = (inodo->size_fichero + SIZE_BLOQUE - 1) / SIZE_BLOQUE;  // Calcular cuántos bloques ocupa el fichero
-    printf("El fichero ocupa %d bloques.\n", num_bloques);
-
-    for (int i = 0; i < num_bloques; i++) {
-        unsigned short int bloque = inodo->i_nbloque[i];
-
-        // Verificar que el bloque no sea NULL_BLOQUE
-        if (bloque == NULL_BLOQUE) {
-            printf("Error: bloque inválido para el fichero '%s' en el índice %d.\n", nombre, i);
-            return -1;  // Error: bloque inválido
-        }
-
-        // Leer el bloque de datos
-        EXT_DATOS *bloque_dato = &memdatos[bloque];
-
-        // Mostrar el contenido del bloque
-        printf("Bloque %d (puntero a bloque: %d): ", i + 1, bloque);
-        for (int j = 0; j < SIZE_BLOQUE; j++) {
-            printf("%c", bloque_dato->dato[j] != 0 ? bloque_dato->dato[j] : '.'); // Usamos '.' para los bytes vacíos
-        }
-        printf("\n");
-    }
-
-    return 0;  // Éxito
+    return 0;
 }
 
 
@@ -376,95 +351,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
 
 int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *ext_bytemaps, EXT_SIMPLE_SUPERBLOCK *ext_superblock, EXT_DATOS *memdatos, char *nombreorigen, char *nombredestino, FILE *fich)
 {
-    int inodo_origen = -1;
-    int inodo_destino = -1;
-
-    // 1. Buscar el fichero origen en el directorio
-    for (int i = 0; i < MAX_FICHEROS; i++) {
-        if (strcmp(directorio[i].dir_nfich, nombreorigen) == 0) {
-            inodo_origen = directorio[i].dir_inodo;
-            printf("Fichero origen '%s' encontrado en la entrada del directorio con inodo %d.\n", nombreorigen, inodo_origen);
-            break;
-        }
-    }
-
-    if (inodo_origen == -1) {
-        printf("Error: fichero origen '%s' no encontrado.\n", nombreorigen);
-        return -1;  // Error: fichero origen no encontrado
-    }
-
-    // 2. Verificar que el destino no existe en el directorio
-    for (int i = 0; i < MAX_FICHEROS; i++) {
-        if (strcmp(directorio[i].dir_nfich, nombredestino) == 0) {
-            printf("Error: ya existe un fichero con el nombre '%s'.\n", nombredestino);
-            return -1;  // Error: el fichero destino ya existe
-        }
-    }
-
-    // 3. Buscar el primer inodo libre
-    for (int i = 0; i < MAX_INODOS; i++) {
-        if (inodos->blq_inodos[i].size_fichero == 0) {
-            inodo_destino = i;
-            break;
-        }
-    }
-
-    if (inodo_destino == -1) {
-        printf("Error: no hay inodos libres para crear el fichero '%s'.\n", nombredestino);
-        return -1;  // Error: no hay inodos libres
-    }
-
-    // 4. Copiar el tamaño del fichero origen al inodo destino
-    EXT_SIMPLE_INODE *inodo_origen_ptr = &inodos->blq_inodos[inodo_origen];
-    EXT_SIMPLE_INODE *inodo_destino_ptr = &inodos->blq_inodos[inodo_destino];
-
-    inodo_destino_ptr->size_fichero = inodo_origen_ptr->size_fichero;
-
-    // 5. Copiar los bloques del fichero origen a bloques libres en el destino
-    for (int i = 0; i < MAX_NUMS_BLOQUE_INODO; i++) {
-        unsigned short int bloque_origen = inodo_origen_ptr->i_nbloque[i];
-        if (bloque_origen != NULL_BLOQUE) {
-            // Buscar primer bloque libre
-            int bloque_destino = -1;
-            for (int j = 0; j < MAX_BLOQUES_PARTICION; j++) {
-                if (ext_bytemaps->bmap_bloques[j] == 0) {
-                    bloque_destino = j;
-                    break;
-                }
-            }
-
-            if (bloque_destino == -1) {
-                printf("Error: no hay bloques libres disponibles para el fichero '%s'.\n", nombredestino);
-                return -1;  // Error: no hay bloques libres
-            }
-
-            // Asignar bloque al inodo destino
-            inodo_destino_ptr->i_nbloque[i] = bloque_destino;
-
-            // Marcar el bloque como ocupado en el bitmap de bloques
-            ext_bytemaps->bmap_bloques[bloque_destino] = 1;
-
-            // Copiar el contenido del bloque
-            memcpy(&memdatos[bloque_destino], &memdatos[bloque_origen], SIZE_BLOQUE);
-        }
-    }
-
-    // 6. Crear una nueva entrada en el directorio
-    for (int i = 0; i < MAX_FICHEROS; i++) {
-        if (directorio[i].dir_nfich[0] == '\0') {
-            // Asignar el nombre y el inodo al nuevo fichero
-            strcpy(directorio[i].dir_nfich, nombredestino);
-            directorio[i].dir_inodo = inodo_destino;
-            printf("Fichero '%s' copiado con éxito. Nuevo inodo: %d\n", nombredestino, inodo_destino);
-            break;
-        }
-    }
-
-    // 7. Guardar los cambios en disco (actualizar directorio, inodos, byte map de bloques)
-    Grabarinodosydirectorio(directorio, inodos, fich);
-    GrabarByteMaps(ext_bytemaps, fich);
-
-    return 0;  // Éxito
+   return 0;
 }
 
 
