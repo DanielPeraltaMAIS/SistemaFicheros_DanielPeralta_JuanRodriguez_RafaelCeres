@@ -242,4 +242,3 @@ void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich)
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich)
 {
 }
-
