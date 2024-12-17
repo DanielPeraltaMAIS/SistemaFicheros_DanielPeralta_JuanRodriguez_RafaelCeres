@@ -484,9 +484,6 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
     }
 
     
-    Grabarinodosydirectorio(directorio, inodos, fich);
-    GrabarByteMaps(ext_bytemaps, fich);
-    GrabarSuperBloque(ext_superblock, fich);
     return 0;  
 }
 
