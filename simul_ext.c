@@ -293,7 +293,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
    {
     int inodo_a_eliminar = -1, salir = 0;
 
-    // 1. Buscar la entrada del directorio correspondiente al nombre del fichero
+    // Buscar la entrada del directorio correspondiente al nombre del fichero
     for (int i = 0; i < MAX_FICHEROS && !salir; i++) {
         if (strcmp(directorio[i].dir_nfich, nombre) == 0) {
             inodo_a_eliminar = directorio[i].dir_inodo;
@@ -307,7 +307,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
         return -1;  // Error: archivo no encontrado
     }
 
-    // 2. Liberar el inodo correspondiente
+    //Liberar el inodo correspondiente
     if (inodo_a_eliminar != NULL_INODO) {
         EXT_SIMPLE_INODE *inodo = &inodos->blq_inodos[inodo_a_eliminar];
 
@@ -322,7 +322,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
             inodo->i_nbloque[i] = NULL_BLOQUE;
         }
 
-        // 3. Liberar los bloques de datos
+        //Liberar los bloques de datos
         for (int i = 0; i < MAX_NUMS_BLOQUE_INODO; i++) {
             if (inodo->i_nbloque[i] != NULL_BLOQUE) {
                 // Marcar el bloque como libre en el bytemap de bloques
@@ -331,7 +331,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
         }
     }
 
-    // 4. Eliminar la entrada del directorio
+    //Eliminar la entrada del directorio
     salir =0;
     for (int i = 0; i < MAX_FICHEROS && !salir; i++) {
         if (directorio[i].dir_inodo == inodo_a_eliminar) {
@@ -342,7 +342,7 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
         }
     }
 
-    // 5. Grabar los cambios en el fichero
+    //Grabar los cambios en el fichero
     //Grabarinodosydirectorio(directorio, inodos, fich);
     //GrabarByteMaps(ext_bytemaps, fich);
     //GrabarSuperBloque(ext_superblock, fich);
