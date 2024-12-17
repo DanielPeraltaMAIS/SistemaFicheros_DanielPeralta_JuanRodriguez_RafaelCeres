@@ -196,8 +196,8 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 
     
     
-       for (int i = 1; i < MAX_FICHEROS; i++) 
-      {
+   for (int i = 1; i < MAX_FICHEROS; i++) 
+   {
       if (directorio[i].dir_inodo != NULL_INODO)  
       {
          EXT_SIMPLE_INODE *inodo = &inodos->blq_inodos[directorio[i].dir_inodo];
@@ -230,16 +230,25 @@ int Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombrea
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *memdatos, char *nombre)
 {
 
-   int indice = BuscaFich(directorio, inodos, nombre);
+   int indice = BuscaFich(directorio, inodos, nombre);   //Para ver si existe el fichero
 
    if(indice != -1)
    {
+
+      EXT_SIMPLE_INODE inodo = inodos->blq_inodos[directorio[indice].dir_inodo];
+
       for(int i = 0; i < MAX_NUMS_BLOQUE_INODO; i++)
       {
-         
 
+         EXT
+         if (inodo.i_nbloque[i] != NULL_BLOQUE)
+         {
+            printf("%s", memdatos[inodo.i_nbloque[i]].dato);  //Imprime los contenidos de los bloques
+         }
          
       }
+
+      printf("\n");
    }
 
    else
