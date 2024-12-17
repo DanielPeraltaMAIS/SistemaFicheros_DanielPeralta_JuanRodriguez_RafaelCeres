@@ -5,7 +5,7 @@
 #include<ctype.h>
 #include "cabeceras.h"
 
-#define LONGITUD_COMANDO 10
+#define LONGITUD_COMANDO 100
 #define NUM_COMANDOS 8
 
 void PrintBytemaps(EXT_BYTE_MAPS *ext_bytemaps);
@@ -73,12 +73,16 @@ int main()
 		   printf (">> ");
 		   fflush(stdin);
 		   comando = leeLinea(LONGITUD_COMANDO);
+
          orden = strtok(comando, " ");
          argumento1 = strtok(NULL, " ");
          argumento2 = strtok(NULL, " ");   //Separa la orden y los argumentos
 
+
 		} 
       while (ComprobarComando(comando,orden,argumento1,argumento2) !=0);
+
+      
 
 	   if (strcmp(orden,"dir")==0) 
       {
@@ -169,6 +173,8 @@ char *leeLinea(int tam)
 
    }
    while(c != '\n' && i < tam);
+
+   res[i] = '\0';
 
    return res;
 
@@ -282,6 +288,105 @@ void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre
    }
 }
 
+int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *ext_bytemaps, EXT_SIMPLE_SUPERBLOCK *ext_superblock, EXT_DATOS *memdatos, char *nombreorigen, char *nombredestino, FILE *fich)
+{
+   int salir = 0;
+   int indiceOrigen = BuscaFich(directorio, inodos, nombreorigen);
+   if (indiceOrigen == -1) 
+   {
+      printf("ERROR: Fichero %s no encontrado\n", nombreorigen);
+      return -1; //Si el fichero origen no existe, sale y devuelve -1
+   }
+
+
+   if (BuscaFich(directorio, inodos, nombredestino) >= 0) 
+   {
+      printf("ERROR: El fichero %s ya existe\n", nombredestino);
+      return -1;  //Si el fichero destino existe, sale y devuelve -1
+   }
+
+   
+   int nuevo_inodo = -1;   //Para buscar un nuevo inodo
+
+   //Por si no hay suficientes inodos
+   if(ext_superblock->s_free_inodes_count == 0)
+   {
+      printf("ERROR: No hay inodos libres.\n");
+      return -1; 
+   }
+
+   for (int i = 0; i < MAX_INODOS && nuevo_inodo == -1; i++)   
+   {
+      if (ext_bytemaps->bmap_inodos[i] == 0) 
+      {
+         nuevo_inodo = i;
+         ext_bytemaps->bmap_inodos[i] = 1;   //Se actualiza el bytemap
+         ext_superblock->s_free_inodes_count--;
+      }
+   }
+
+
+   //Inodo del fichero origen
+   EXT_SIMPLE_INODE *inodo_origen = &inodos->blq_inodos[directorio[indiceOrigen].dir_inodo];
+
+   // Creamos un nuevo inodo para el fichero destino y copiamos el inodo del fichero destino
+   EXT_SIMPLE_INODE *inodo_destino = &inodos->blq_inodos[nuevo_inodo];
+   memcpy(inodo_destino, inodo_origen, sizeof(EXT_SIMPLE_INODE)); 
+   inodo_destino->size_fichero = inodo_origen->size_fichero;
+
+   //Copiamos también los bloques
+   int bloques_necesarios = (inodo_origen->size_fichero + SIZE_BLOQUE - 1)/SIZE_BLOQUE;
+   int bloques_asignados = 0;
+   for (int i = 0; i < MAX_NUMS_BLOQUE_INODO && salir == 0; i++) 
+   {
+      if (bloques_asignados >= bloques_necesarios) 
+      {
+         inodo_destino->i_nbloque[i] = NULL_BLOQUE; 
+         continue;
+         //Cuando haya suficientes bloques, los demás los ponemos como null
+      }
+
+      for (int j = 0; j < MAX_BLOQUES_DATOS && salir == 0; j++) 
+      {
+         if (ext_bytemaps->bmap_bloques[j] == 0) 
+         {
+            ext_bytemaps->bmap_bloques[j] = 1; 
+            ext_superblock->s_free_blocks_count--;
+            inodo_destino->i_nbloque[i] = j;
+
+           
+            memcpy(memdatos[j].dato, memdatos[inodo_origen->i_nbloque[bloques_asignados]].dato, SIZE_BLOQUE);
+            bloques_asignados++;
+            salir = 1;
+
+            //Si el bloque está libre, se lo asignamos y copiamos la información
+         }
+      }
+
+      salir = 0;
+   }
+   if (bloques_asignados < bloques_necesarios)   //Si no hay bloques suficientes
+   {
+      printf("ERROR: No hay bloques suficientes para copiar el fichero\n");
+      return -1;
+   }
+
+   //Buscamos una entrada libre en el directorio para poner el nuevo inodo
+   for (int i = 0; i < MAX_FICHEROS && salir == 0; i++) 
+   {
+      if (directorio[i].dir_inodo == NULL_INODO) 
+      {
+         directorio[i].dir_inodo = nuevo_inodo;
+         strncpy(directorio[i].dir_nfich, nombredestino, LEN_NFICH);
+         salir = 1;
+      }
+   }
+   salir = 0;
+
+   printf("Fichero %s copiado a %s correctamente.\n", nombreorigen, nombredestino);
+   return 0;
+}
+
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *memdatos, char *nombre)
 {
 
@@ -374,11 +479,6 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
     //GrabarByteMaps(ext_bytemaps, fich);
     //GrabarSuperBloque(ext_superblock, fich);
     return 0;  // Éxito
-}
-
-int Copiar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *ext_bytemaps, EXT_SIMPLE_SUPERBLOCK *ext_superblock, EXT_DATOS *memdatos, char *nombreorigen, char *nombredestino, FILE *fich)
-{
-   return 0;
 }
 
 //Funciones para grabar los datos en la particion una vez se termina de usar
