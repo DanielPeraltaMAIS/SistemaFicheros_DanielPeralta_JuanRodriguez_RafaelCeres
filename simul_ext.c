@@ -57,6 +57,7 @@ int main()
      memcpy(&ext_blq_inodos,(EXT_BLQ_INODOS *)&datosfich[2], SIZE_BLOQUE);
      memcpy(memdatos,(EXT_DATOS *)&datosfich[4],MAX_BLOQUES_DATOS*SIZE_BLOQUE);
      PrintBytemaps(&ext_bytemaps);
+     LeeSuperBloque(&ext_superblock);
      // Buce de tratamiento de comandos
      for (;;){
 		 do {
@@ -108,6 +109,12 @@ int ComprobarComando(char *strcomando, char *orden, char *argumento1, char *argu
 
 void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup)
 {
+   printf("Bloque %d Bytes\n", (*psup).s_block_size);
+   printf("inodos particion = %d\n", (*psup).s_inodes_count);
+   printf("inodos libres = %d\n", (*psup).s_free_inodes_count);
+   printf("Bloques particion = %d\n", (*psup).s_blocks_count);
+   printf("Bloques libres = %d\n", (*psup).s_free_blocks_count);
+   printf("Primer bloque de datos = %d\n", (*psup).s_first_data_block);
 }
 
 int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre)
