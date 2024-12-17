@@ -5,7 +5,8 @@
 #include<ctype.h>
 #include "cabeceras.h"
 
-#define LONGITUD_COMANDO 100
+#define LONGITUD_COMANDO 10
+#define NUM_COMANDOS 8
 
 void PrintBytemaps(EXT_BYTE_MAPS *ext_bytemaps);
 int ComprobarComando(char *strcomando, char *orden, char *argumento1, char *argumento2);
@@ -30,6 +31,8 @@ void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich);
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich);
 
 char *leeLinea(int tam);
+
+char * listaComandos[NUM_COMANDOS] = {"bytemaps", "copy", "dir", "info", "imprimir", "rename", "remove", "salir"};
 
 int main()
 {
@@ -135,6 +138,21 @@ int main()
    }
 }
 
+//Para saber si una palabra esta en una lista
+int palabraEnLista(char *palabra, char **lista, int tamLista)
+{
+   int res = 0;   //Si es 0, no está; si es 1, está
+   for(int i = 0; i < tamLista; i++)
+   {
+      if(strcmp(palabra, lista[i]) == 0)
+      {
+         res = 1;
+      }
+   }
+
+   return res;
+}
+
 char *leeLinea(int tam)
 {
    int i = 0;
@@ -174,7 +192,19 @@ void PrintBytemaps(EXT_BYTE_MAPS *ext_bytemaps)
 
 int ComprobarComando(char *strcomando, char *orden, char *argumento1, char *argumento2)
 {
-   return 0;
+   int res = 1;  //Si es 0, es válido. Si no, es invalido
+   if(palabraEnLista(orden, listaComandos, NUM_COMANDOS) == 1)
+   {
+      res = 0;
+   }
+
+   else
+   {
+      printf("ERROR: Comando ilegal [bytemaps, copy, dir, info, imprimir, rename, remove, salir]\n");
+   }
+
+
+   return res;
 }
 
 void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup)
