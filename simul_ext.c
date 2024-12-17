@@ -34,17 +34,17 @@ int main()
 	 char argumento1[LONGITUD_COMANDO];
 	 char argumento2[LONGITUD_COMANDO];
 	 
-	 int i,j;
-	 unsigned long int m;
-     EXT_SIMPLE_SUPERBLOCK ext_superblock;
-     EXT_BYTE_MAPS ext_bytemaps;
-     EXT_BLQ_INODOS ext_blq_inodos;
-     EXT_ENTRADA_DIR directorio[MAX_FICHEROS];
-     EXT_DATOS memdatos[MAX_BLOQUES_DATOS];
-     EXT_DATOS datosfich[MAX_BLOQUES_PARTICION];
-     int entradadir;
-     int grabardatos;
-     FILE *fent;
+	int i,j;
+	unsigned long int m;
+   EXT_SIMPLE_SUPERBLOCK ext_superblock;
+   EXT_BYTE_MAPS ext_bytemaps;
+   EXT_BLQ_INODOS ext_blq_inodos;
+   EXT_ENTRADA_DIR directorio[MAX_FICHEROS];
+   EXT_DATOS memdatos[MAX_BLOQUES_DATOS];
+   EXT_DATOS datosfich[MAX_BLOQUES_PARTICION];
+   int entradadir;
+   int grabardatos;
+   FILE *fent;
      
      // Lectura del fichero completo de una sola vez
      fent = fopen("particion.bin","rb+");
