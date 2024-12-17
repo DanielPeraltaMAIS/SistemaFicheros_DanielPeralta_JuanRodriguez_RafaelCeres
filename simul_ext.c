@@ -102,7 +102,7 @@ int main()
          continue;
       }
       else if (strcmp(orden, "imprimir")==0){
-         //Imprimir();
+         Imprimir(directorio, &ext_blq_inodos, memdatos, argumento1);
          continue;
       }
       // Escritura de metadatos en comandos rename, remove, copy     
@@ -225,7 +225,8 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
 {
    for(int i = 0; i < MAX_FICHEROS; i++){
-      if((strcmp(directorio[i].dir_nfich, nombreantiguo) == 0)&&(strcmp(directorio[i].dir_nfich, nombrenuevo) != 0)){
+      if((strcmp(directorio[i].dir_nfich, nombreantiguo) == 0)&&(strcmp(directorio[i].dir_nfich, nombrenuevo) != 0))
+      {
          memcpy(directorio[i].dir_nfich, nombrenuevo, LEN_NFICH);
       }
    }
@@ -255,7 +256,7 @@ int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *mem
 
    else
    {
-      printf("Fichero no encontrado: %s.", nombre);
+      printf("Fichero no encontrado: %s.\n", nombre);
    }
 
    return 0;
