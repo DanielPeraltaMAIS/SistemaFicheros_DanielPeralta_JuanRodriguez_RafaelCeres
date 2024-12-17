@@ -208,8 +208,8 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 
     
     
-       for (int i = 1; i < MAX_FICHEROS; i++) 
-      {
+   for (int i = 1; i < MAX_FICHEROS; i++) 
+   {
       if (directorio[i].dir_inodo != NULL_INODO)  
       {
          EXT_SIMPLE_INODE *inodo = &inodos->blq_inodos[directorio[i].dir_inodo];
@@ -234,10 +234,23 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 }
 void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
 {
-   for(int i = 0; i < MAX_FICHEROS; i++){
-      if((strcmp(directorio[i].dir_nfich, nombreantiguo) == 0)&&(strcmp(directorio[i].dir_nfich, nombrenuevo) != 0)){
-         memcpy(directorio[i].dir_nfich, nombrenuevo, LEN_NFICH);
+   int posicionNombreAntiguo = -1, posicionNombreNuevo = -1;
+   for(int i = 0; (i < MAX_FICHEROS); i++){
+      if(strcmp(directorio[i].dir_nfich, nombreantiguo) == 0){
+         posicionNombreAntiguo = i; //Existe un fichero con el nombre antiguo
       }
+      if(strcmp(directorio[i].dir_nfich, nombrenuevo) == 0){
+         posicionNombreNuevo = i; //Existe un fichero con el nombre nuevo
+      }
+   }
+   if(posicionNombreAntiguo < 0){
+      printf("ERROR: Fichero %s no encontrado\n", nombreantiguo);
+   }
+   else if(posicionNombreNuevo >= 0){
+      printf("ERROR: El fichero %s ya existe\n", nombrenuevo);
+   }
+   else{
+      memcpy(directorio[posicionNombreAntiguo].dir_nfich, nombrenuevo, LEN_NFICH); //Cambio de nombre exitoso
    }
 }
 
@@ -245,23 +258,25 @@ int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *mem
 {
     int inodo_a_imprimir = -1;
 
-    // 1. Buscar la entrada del directorio correspondiente al nombre del fichero
-    for (int i = 0; i < MAX_FICHEROS; i++) {
-        if (strcmp(directorio[i].dir_nfich, nombre) == 0) {
-            inodo_a_imprimir = directorio[i].dir_inodo;
-            printf("Fichero '%s' encontrado en la entrada del directorio con inodo %d.\n", nombre, inodo_a_imprimir);
-            break;
-        }
-    }
+   int indice = BuscaFich(directorio, inodos, nombre);   //Para ver si existe el fichero
 
-    // Si no se encuentra el fichero, devolver un error
-    if (inodo_a_imprimir == -1) {
-        printf("Error: fichero '%s' no encontrado.\n", nombre);
-        return -1;  // Error: archivo no encontrado
-    }
+   if(indice != -1)
+   {
 
-    // 2. Recuperar el inodo del fichero
-    EXT_SIMPLE_INODE *inodo = &inodos->blq_inodos[inodo_a_imprimir];
+      EXT_SIMPLE_INODE inodo = inodos->blq_inodos[directorio[indice].dir_inodo];
+
+      for(int i = 0; i < MAX_NUMS_BLOQUE_INODO; i++)
+      {
+
+         if (inodo.i_nbloque[i] != NULL_BLOQUE)
+         {
+            printf("%s", memdatos[inodo.i_nbloque[i]].dato);  //Imprime los contenidos de los bloques
+         }
+         
+      }
+
+      printf("\n");
+   }
 
     // Verificar si el fichero tiene contenido (tamaño mayor que 0)
     if (inodo->size_fichero == 0) {
