@@ -483,11 +483,11 @@ int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *e
         }
     }
 
-    //Grabar los cambios en el fichero
-    //Grabarinodosydirectorio(directorio, inodos, fich);
-    //GrabarByteMaps(ext_bytemaps, fich);
-    //GrabarSuperBloque(ext_superblock, fich);
-    return 0;  // Éxito
+    
+    Grabarinodosydirectorio(directorio, inodos, fich);
+    GrabarByteMaps(ext_bytemaps, fich);
+    GrabarSuperBloque(ext_superblock, fich);
+    return 0;  
 }
 
 //Funciones para grabar los datos en la particion una vez se termina de usar
