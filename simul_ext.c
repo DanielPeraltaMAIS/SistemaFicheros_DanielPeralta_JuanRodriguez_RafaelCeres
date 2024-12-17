@@ -13,7 +13,7 @@ void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup);
 int BuscaFich(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
               char *nombre);
 void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos);
-int Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
+void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
               char *nombreantiguo, char *nombrenuevo);
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, 
              EXT_DATOS *memdatos, char *nombre);
@@ -97,7 +97,10 @@ int main()
          LeeSuperBloque(&ext_superblock);
          continue;
       }
-
+      else if (strcmp(orden, "rename")==0){
+         Renombrar(directorio, &ext_blq_inodos, argumento1, argumento2);
+         continue;
+      }
       
       // Escritura de metadatos en comandos rename, remove, copy     
       //Grabarinodosydirectorio(&directorio,&ext_blq_inodos,fent);
@@ -156,7 +159,7 @@ void PrintBytemaps(EXT_BYTE_MAPS *ext_bytemaps)
 
 int ComprobarComando(char *strcomando, char *orden, char *argumento1, char *argumento2)
 {
-    return 0;
+   return 0;
 }
 
 void LeeSuperBloque(EXT_SIMPLE_SUPERBLOCK *psup)
@@ -178,9 +181,13 @@ void Directorio(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos)
 {
 }
 
-int Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
+void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombreantiguo, char *nombrenuevo)
 {
-    return 0;
+   for(int i = 0; i < MAX_FICHEROS; i++){
+      if((strcmp(directorio[i].dir_nfich, nombreantiguo) == 0)&&(strcmp(directorio[i].dir_nfich, nombrenuevo) != 0)){
+         memcpy(directorio[i].dir_nfich, nombreantiguo, LEN_NFICH);
+      }
+   }
 }
 
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *memdatos, char *nombre)
