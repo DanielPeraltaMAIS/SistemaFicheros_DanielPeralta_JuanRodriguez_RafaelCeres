@@ -256,7 +256,6 @@ void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre
 
 int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *memdatos, char *nombre)
 {
-    int inodo_a_imprimir = -1;
 
    int indice = BuscaFich(directorio, inodos, nombre);   //Para ver si existe el fichero
 
@@ -283,15 +282,15 @@ int Imprimir(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_DATOS *mem
       printf("Fichero no encontrado: %s.\n", nombre);
    }
 
-    return 0;
+   return 0;
 }
 
 
 
 int Borrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, EXT_BYTE_MAPS *ext_bytemaps, EXT_SIMPLE_SUPERBLOCK *ext_superblock, char *nombre, FILE *fich)
 
-   {
-    int inodo_a_eliminar = -1, salir = 0;
+{
+   int inodo_a_eliminar = -1, salir = 0;
 
     // 1. Buscar la entrada del directorio correspondiente al nombre del fichero
     for (int i = 0; i < MAX_FICHEROS && !salir; i++) {
