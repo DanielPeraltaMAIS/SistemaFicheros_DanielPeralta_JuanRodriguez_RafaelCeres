@@ -236,12 +236,8 @@ void Renombrar(EXT_ENTRADA_DIR *directorio, EXT_BLQ_INODOS *inodos, char *nombre
 {
    int posicionNombreAntiguo = -1, posicionNombreNuevo = -1;
    for(int i = 0; (i < MAX_FICHEROS); i++){
-      if(strcmp(directorio[i].dir_nfich, nombreantiguo) == 0){
-         posicionNombreAntiguo = i; //Existe un fichero con el nombre antiguo
-      }
-      if(strcmp(directorio[i].dir_nfich, nombrenuevo) == 0){
-         posicionNombreNuevo = i; //Existe un fichero con el nombre nuevo
-      }
+      posicionNombreAntiguo = BuscaFich(directorio, inodos, nombreantiguo);
+      posicionNombreNuevo = BuscaFich(directorio, inodos, nombrenuevo);
    }
    if(posicionNombreAntiguo < 0){
       printf("ERROR: Fichero %s no encontrado\n", nombreantiguo);
