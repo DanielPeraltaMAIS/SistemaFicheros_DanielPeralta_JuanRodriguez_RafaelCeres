@@ -94,7 +94,7 @@ int main()
 
       else if (strcmp(orden,"info")==0) 
       {
-         //LeeSuperBloque(&ext_superblock);
+         LeeSuperBloque(&ext_superblock);
          continue;
       }
 
@@ -212,9 +212,4 @@ void GrabarSuperBloque(EXT_SIMPLE_SUPERBLOCK *ext_superblock, FILE *fich)
 
 void GrabarDatos(EXT_DATOS *memdatos, FILE *fich)
 {
-}
-
-int ComprobarComando(char *strcomando, char *orden, char *argumento1, char *argumento2)
-{
-   return 0;
 }
